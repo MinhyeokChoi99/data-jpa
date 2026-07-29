@@ -6,10 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
+import study.datajpa.entity.Team;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Rollback(false)
 class MemberRepositoryTest {
     @Autowired MemberRepository memberRepository;
+    @Autowired TeamRepository teamRepository;
 
     @Test
     public void testMember() {
@@ -55,5 +57,57 @@ class MemberRepositoryTest {
 
         long deletedCount = memberRepository.count();
         assertThat(deletedCount).isEqualTo(0);
+    }
+
+    @Test
+    public void findByUsernameAndAgeGreaterThen() {
+        Member member1 = new Member("AAA",10);
+        Member member2 = new Member("BBB", 20);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        List<Member> list = memberRepository.findByUsernameAndAgeGreaterThan("BBB", 15);
+        assertThat(list.size()).isEqualTo(1);
+    }
+
+    @Test
+    public void findUserTest() {
+        Member member1 = new Member("AAA",10);
+        Member member2 = new Member("BBB", 20);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        List<Member> list = memberRepository.findUser("AAA", 10);
+        assertThat(list.size()).isEqualTo(1);
+    }
+
+    @Test
+    public void findUserNameTest() {
+        Member member1 = new Member("AAA",10);
+        Member member2 = new Member("BBB", 20);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        List<String> usernameList = memberRepository.findUsernameList();
+        assertThat(usernameList.size()).isEqualTo(2);
+    }
+
+    @Test
+    public void findDto() {
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        Member member1 = new Member("AAA",10,teamA);
+        Member member2 = new Member("BBB", 20,teamB);
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        List<MemberDto> memberDto = memberRepository.findMemberDto();
+        for (MemberDto dto : memberDto) {
+            System.out.println("dto.id() = " + dto.id());
+            System.out.println("dto.id() = " + dto.username());
+            System.out.println("dto.id() = " + dto.teamName());
+        }
     }
 }
