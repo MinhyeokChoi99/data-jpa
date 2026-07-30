@@ -110,4 +110,19 @@ class MemberRepositoryTest {
             System.out.println("dto.id() = " + dto.teamName());
         }
     }
+
+    @Test
+    public void findByNamesTest() {
+        Member member1 = new Member("AAA",10);
+        Member member2 = new Member("BBB", 20);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        List<Member> byNames = memberRepository.findByNames(List.of("AAA", "BBB"));
+        for (Member byName : byNames) {
+            System.out.println("byName = " + byName);
+        }
+
+        assertThat(byNames.size()).isEqualTo(2);
+    }
 }
