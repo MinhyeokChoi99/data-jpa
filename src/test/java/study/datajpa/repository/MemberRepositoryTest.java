@@ -162,4 +162,17 @@ class MemberRepositoryTest {
         int i = memberRepository.bulkAgePlus(20);
         assertThat(i).isEqualTo(3);
     }
+
+    @Test
+    public void findMemberCustom() {
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 19));
+        memberRepository.save(new Member("member3", 20));
+        memberRepository.save(new Member("member4", 21));
+        memberRepository.save(new Member("member5", 40));
+        memberRepository.flush();
+
+        List<Member> memberCustom = memberRepository.findMemberCustom();
+        assertThat(memberCustom.size()).isEqualTo(5);
+    }
 }
