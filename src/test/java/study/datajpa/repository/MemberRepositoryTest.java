@@ -175,4 +175,51 @@ class MemberRepositoryTest {
         List<Member> memberCustom = memberRepository.findMemberCustom();
         assertThat(memberCustom.size()).isEqualTo(5);
     }
+
+    @Test
+    public void projections() {
+        memberRepository.save(new Member("m1", 10));
+        memberRepository.save(new Member("member2", 19));
+        memberRepository.save(new Member("member3", 20));
+        memberRepository.save(new Member("member4", 21));
+        memberRepository.save(new Member("member5", 40));
+        memberRepository.flush();
+
+        List<Member> memberCustom = memberRepository.findMemberCustom();
+        List<NestedClosedProtections> m1 = memberRepository.findProjectionsByUsername("m1",NestedClosedProtections.class);
+        for (NestedClosedProtections nestedClosedProtections : m1) {
+            System.out.println("nestedClosedProtections = " + nestedClosedProtections);
+        }
+    }
+
+    @Test
+    public void nativeQuery() {
+        memberRepository.save(new Member("m1", 10));
+        memberRepository.save(new Member("member2", 19));
+        memberRepository.save(new Member("member3", 20));
+        memberRepository.save(new Member("member4", 21));
+        memberRepository.save(new Member("member5", 40));
+        memberRepository.flush();
+
+        Member m1 = memberRepository.findByNativeQuery("m1");
+        System.out.println("m1 = " + m1);
+    }
+
+    @Test
+    public void nativeProjection() {
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        Member member1 = new Member("AAA",10,teamA);
+        Member member2 = new Member("BBB", 20,teamB);
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        Page<MemberProjection> aaa = memberRepository.findByNativeProjection(PageRequest.of(0, 10));
+        List<MemberProjection> content = aaa.getContent();
+        for (MemberProjection memberProjection : content) {
+            System.out.println("memberProjection = " + memberProjection);
+        }
+    }
 }
